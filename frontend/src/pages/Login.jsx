@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import BOATLogo from '../components/BOATLogo'
 
 export default function Login() {
   const { login } = useAuth()
@@ -30,7 +31,7 @@ export default function Login() {
     <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at center top, #1a1200 0%, #0C0C0C 70%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-4xl font-bold" style={{ color: '#D4AF37' }}>🚲 BOAT</Link>
+          <Link to="/"><BOATLogo className="text-4xl" /></Link>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
 

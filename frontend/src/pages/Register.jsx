@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import BOATLogo from '../components/BOATLogo'
 
 const roles = [
   { value: 'customer', label: '🛒 Customer', desc: 'I want to order from local vendors' },
@@ -43,7 +44,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ background: 'radial-gradient(ellipse at center top, #1a1200 0%, #0C0C0C 70%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-bold" style={{ color: '#D4AF37' }}>🚲 BOAT</Link>
+          <Link to="/"><BOATLogo className="text-3xl" /></Link>
           <p className="text-gray-500 mt-2">Create your account</p>
         </div>
 

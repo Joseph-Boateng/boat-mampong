@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import BOATLogo from '../components/BOATLogo'
 
 const steps = [
   { icon: '🏪', title: 'Browse Local Vendors', desc: 'Find food, groceries, medicine, and more from shops in your area.' },
@@ -21,8 +22,8 @@ export default function Landing() {
       {/* Hero */}
       <div style={{ background: 'radial-gradient(ellipse at center top, #2a1f00 0%, #0C0C0C 60%)' }}>
         <div className="max-w-5xl mx-auto px-4 py-24 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-tight">
-            🚲 <span style={{ color: '#C8952C' }}>BOAT</span>
+          <h1 className="text-5xl md:text-6xl mb-4">
+            <BOATLogo />
           </h1>
           <p className="text-lg text-gray-400 mb-10 max-w-xl mx-auto">
             Order from local vendors in your community. Delivered fast by bicycle.
@@ -107,7 +108,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t border-dark-600 text-center py-8 text-sm text-gray-600">
-        <p style={{ color: '#C8952C' }} className="font-semibold mb-1">🚲 BOAT</p>
+        <p className="mb-1"><BOATLogo className="text-base" /></p>
         <p>© 2026 Built for the people of Mampong, Ghana.</p>
       </footer>
     </div>
