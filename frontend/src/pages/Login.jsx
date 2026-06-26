@@ -18,6 +18,7 @@ export default function Login() {
       if (user.role === 'customer') navigate('/shop')
       else if (user.role === 'vendor') navigate('/vendor')
       else if (user.role === 'rider') navigate('/rider')
+      else if (user.role === 'admin') navigate('/admin')
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Check your credentials.')
     } finally {
