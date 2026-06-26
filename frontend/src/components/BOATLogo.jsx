@@ -1,65 +1,71 @@
 const GOLD = '#D4AF37'
+const FONT = "Cinzel, Georgia, serif"
 
-function BicycleWheel({ cx, cy, r }) {
+function Wheel({ cx, cy, r }) {
   return (
     <>
-      <circle cx={cx} cy={cy} r={r} strokeWidth="1.5" />
-      {[0, 60, 120].map((deg, i) => {
-        const rad = (deg * Math.PI) / 180
-        const dx = r * Math.sin(rad)
-        const dy = r * Math.cos(rad)
-        return <line key={i} x1={cx + dx} y1={cy - dy} x2={cx - dx} y2={cy + dy} strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={r} stroke={GOLD} strokeWidth="5" fill="none" />
+      {Array.from({ length: 10 }, (_, i) => {
+        const a = (i * 36 * Math.PI) / 180
+        const s = Math.sin(a)
+        const c = Math.cos(a)
+        return (
+          <line
+            key={i}
+            x1={cx + 9 * s}   y1={cy - 9 * c}
+            x2={cx + (r - 4) * s} y2={cy - (r - 4) * c}
+            stroke={GOLD} strokeWidth="2.5" strokeLinecap="round"
+          />
+        )
       })}
-      <circle cx={cx} cy={cy} r="2.5" fill={GOLD} stroke="none" />
+      <circle cx={cx} cy={cy} r="8" fill={GOLD} />
     </>
   )
 }
 
 export default function BOATLogo({ className = '', style = {} }) {
   return (
-    <span
-      className={`inline-flex items-center font-bold ${className}`}
-      style={{ color: GOLD, gap: '0.05em', lineHeight: 1, ...style }}
+    <svg
+      viewBox="0 0 800 240"
+      className={className}
+      style={{ display: 'block', ...style }}
+      aria-label="BOAT"
+      role="img"
     >
-      <span>B</span>
-      <svg
-        viewBox="0 0 100 100"
-        width="0.85em"
-        height="0.85em"
-        fill="none"
-        stroke={GOLD}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        {/* O ring */}
-        <circle cx="50" cy="50" r="43" strokeWidth="4" />
+      {/* Outer ellipse */}
+      <ellipse cx="400" cy="120" rx="390" ry="108"
+        fill="none" stroke={GOLD} strokeWidth="1.5" opacity="0.5" />
 
-        {/* Bicycle wheels — outer edge nearly touches inner O ring */}
-        <BicycleWheel cx={29} cy={64} r={18} />
-        <BicycleWheel cx={71} cy={64} r={18} />
+      {/* Left rule + dot */}
+      <circle cx="14" cy="120" r="4.5" fill={GOLD} />
+      <line x1="20" y1="120" x2="232" y2="120" stroke={GOLD} strokeWidth="1.5" />
 
-        {/* Rear triangle: seat stay, chain stay, seat tube */}
-        <line x1="29" y1="64" x2="37" y2="47" strokeWidth="1.5" />
-        <line x1="29" y1="64" x2="50" y2="76" strokeWidth="1.5" />
-        <line x1="37" y1="47" x2="50" y2="76" strokeWidth="1.5" />
+      {/* Right rule + dot */}
+      <line x1="568" y1="120" x2="780" y2="120" stroke={GOLD} strokeWidth="1.5" />
+      <circle cx="786" cy="120" r="4.5" fill={GOLD} />
 
-        {/* Main triangle: top tube, down tube */}
-        <line x1="37" y1="47" x2="64" y2="45" strokeWidth="1.5" />
-        <line x1="64" y1="45" x2="50" y2="76" strokeWidth="1.5" />
+      {/* B */}
+      <text
+        x="316" y="158"
+        textAnchor="end"
+        fontFamily={FONT}
+        fontSize="108"
+        fontWeight="700"
+        fill={GOLD}
+      >B</text>
 
-        {/* Fork */}
-        <line x1="64" y1="45" x2="71" y2="64" strokeWidth="1.5" />
+      {/* Bicycle wheel replacing O */}
+      <Wheel cx={400} cy={120} r={75} />
 
-        {/* Handlebar — stem up then bar across */}
-        <line x1="64" y1="45" x2="64" y2="37" strokeWidth="1.5" />
-        <line x1="57" y1="37" x2="71" y2="37" strokeWidth="2" />
-
-        {/* Saddle — post up then seat rail */}
-        <line x1="37" y1="47" x2="35" y2="37" strokeWidth="1.5" />
-        <line x1="27" y1="37" x2="43" y2="37" strokeWidth="2" />
-      </svg>
-      <span>AT</span>
-    </span>
+      {/* AT */}
+      <text
+        x="490" y="158"
+        textAnchor="start"
+        fontFamily={FONT}
+        fontSize="108"
+        fontWeight="700"
+        fill={GOLD}
+      >AT</text>
+    </svg>
   )
 }

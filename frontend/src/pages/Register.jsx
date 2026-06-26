@@ -44,7 +44,9 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ background: 'radial-gradient(ellipse at center top, #1a1200 0%, #0C0C0C 70%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/"><BOATLogo className="text-3xl" /></Link>
+          <Link to="/" className="block">
+            <BOATLogo style={{ width: '100%', maxWidth: 300 }} className="mx-auto" />
+          </Link>
           <p className="text-gray-500 mt-2">Create your account</p>
         </div>
 
