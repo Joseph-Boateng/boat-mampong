@@ -64,14 +64,14 @@ export default function AdminRiders() {
                   <td className="p-4 text-center font-semibold">{r.total_deliveries}</td>
                   <td className="p-4 font-semibold text-green-600">{parseFloat(r.total_earned || 0).toFixed(2)}</td>
                   <td className="p-4">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.is_verified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.is_verified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-800'}`}>
                       {r.is_verified ? 'Verified' : 'Unverified'}
                     </span>
                   </td>
                   <td className="p-4">
                     <button
                       onClick={() => toggleVerify(r)}
-                      className={`text-xs px-3 py-1 rounded font-medium ${r.is_verified ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
+                      className={`text-xs px-3 py-1 rounded font-medium ${r.is_verified ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
                     >
                       {r.is_verified ? 'Unverify' : 'Verify'}
                     </button>

@@ -39,7 +39,7 @@ export default function AdminLayout() {
                     : 'text-gray-500 hover:text-white hover:bg-dark-600'
                 }`
               }
-              style={({ isActive }) => isActive ? { background: 'linear-gradient(135deg, #D4AF37, #F0C040)', color: '#0C0C0C' } : {}}
+              style={({ isActive }) => isActive ? { background: 'linear-gradient(135deg, #B07A12, #C8952C)', color: '#0C0C0C' } : {}}
             >
               {label}
             </NavLink>

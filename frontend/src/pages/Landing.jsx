@@ -31,14 +31,14 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/register"
-              style={{ background: 'linear-gradient(135deg, #D4AF37, #F0C040)', color: '#0C0C0C' }}
+              style={{ background: 'linear-gradient(135deg, #B07A12, #C8952C)', color: '#0C0C0C' }}
               className="font-bold py-3 px-10 rounded-xl hover:opacity-90 transition-opacity text-lg"
             >
               Start Ordering
             </Link>
             <Link
               to="/register?role=vendor"
-              className="border border-yellow-600 text-yellow-500 font-bold py-3 px-10 rounded-xl hover:bg-yellow-600 hover:text-black transition-all text-lg"
+              className="border border-brand-600 text-brand-400 font-bold py-3 px-10 rounded-xl hover:bg-brand-600 hover:text-black transition-all text-lg"
             >
               Sell on BOAT
             </Link>
@@ -55,7 +55,7 @@ export default function Landing() {
         <h2 className="text-3xl font-bold text-center text-white mb-12">Simple. Fast. Local.</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, i) => (
-            <div key={i} className="text-center bg-dark-700 rounded-2xl p-8 border border-dark-500 hover:border-yellow-700 transition-colors">
+            <div key={i} className="text-center bg-dark-700 rounded-2xl p-8 border border-dark-500 hover:border-brand-600 transition-colors">
               <div className="text-4xl mb-4">{step.icon}</div>
               <h3 className="font-bold text-white text-lg mb-2">{step.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
@@ -77,10 +77,10 @@ export default function Landing() {
               <Link
                 key={cat.value}
                 to="/register"
-                className="bg-dark-700 rounded-xl p-5 text-center border border-dark-500 hover:border-yellow-600 hover:bg-dark-600 transition-all group"
+                className="bg-dark-700 rounded-xl p-5 text-center border border-dark-500 hover:border-brand-500 hover:bg-dark-600 transition-all group"
               >
                 <div className="text-3xl mb-2">{cat.icon}</div>
-                <div className="text-sm font-medium text-gray-400 group-hover:text-yellow-500 transition-colors">{cat.label}</div>
+                <div className="text-sm font-medium text-gray-400 group-hover:text-brand-400 transition-colors">{cat.label}</div>
               </Link>
             ))}
           </div>
