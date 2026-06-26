@@ -17,82 +17,99 @@ const categories = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-dark-900">
       {/* Hero */}
-      <div style={{background: 'linear-gradient(135deg, #f97316, #c2410c)'}} className="text-white">
-        <div className="max-w-5xl mx-auto px-4 py-20 text-center">
-          <div className="text-5xl mb-4">🚲</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            BOAT Mampong
+      <div style={{ background: 'radial-gradient(ellipse at center top, #2a1f00 0%, #0C0C0C 60%)' }}>
+        <div className="max-w-5xl mx-auto px-4 py-24 text-center">
+          <div className="text-6xl mb-6">🚲</div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-tight">
+            BOAT <span style={{ color: '#D4AF37' }}>Mampong</span>
           </h1>
-          <p className="text-xl text-orange-100 mb-8 max-w-xl mx-auto">
+          <p className="text-lg text-gray-400 mb-10 max-w-xl mx-auto">
             Order from local vendors in your community. Delivered fast by bicycle.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/register" className="bg-white text-brand-600 font-bold py-3 px-8 rounded-xl hover:bg-orange-50 transition-colors">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/register"
+              style={{ background: 'linear-gradient(135deg, #D4AF37, #F0C040)', color: '#0C0C0C' }}
+              className="font-bold py-3 px-10 rounded-xl hover:opacity-90 transition-opacity text-lg"
+            >
               Start Ordering
             </Link>
-            <Link to="/register?role=vendor" className="bg-brand-600 border-2 border-white text-white font-bold py-3 px-8 rounded-xl hover:bg-brand-700 transition-colors">
+            <Link
+              to="/register?role=vendor"
+              className="border border-yellow-600 text-yellow-500 font-bold py-3 px-10 rounded-xl hover:bg-yellow-600 hover:text-black transition-all text-lg"
+            >
               Sell on BOAT Mampong
             </Link>
           </div>
         </div>
       </div>
 
+      {/* Gold divider */}
+      <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)' }} />
+
       {/* How it works */}
-      <div className="max-w-5xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-center mb-10">How it works</h2>
+      <div className="max-w-5xl mx-auto px-4 py-20">
+        <p style={{ color: '#D4AF37' }} className="text-center text-sm font-semibold uppercase tracking-widest mb-3">How it works</p>
+        <h2 className="text-3xl font-bold text-center text-white mb-12">Simple. Fast. Local.</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, i) => (
-            <div key={i} className="text-center">
-              <div className="text-4xl mb-3">{step.icon}</div>
-              <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
-              <p className="text-gray-600 text-sm">{step.desc}</p>
+            <div key={i} className="text-center bg-dark-700 rounded-2xl p-8 border border-dark-500 hover:border-yellow-700 transition-colors">
+              <div className="text-4xl mb-4">{step.icon}</div>
+              <h3 className="font-bold text-white text-lg mb-2">{step.title}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Gold divider */}
+      <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)' }} />
+
       {/* Categories */}
-      <div className="bg-white py-16">
+      <div className="py-20 bg-dark-800">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-10">What you can order</h2>
+          <p style={{ color: '#D4AF37' }} className="text-center text-sm font-semibold uppercase tracking-widest mb-3">Categories</p>
+          <h2 className="text-3xl font-bold text-center text-white mb-12">What you can order</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((cat) => (
               <Link
                 key={cat.value}
-                to={`/register`}
-                className="card p-4 text-center hover:border-brand-300 hover:shadow-md transition-all cursor-pointer"
+                to="/register"
+                className="bg-dark-700 rounded-xl p-5 text-center border border-dark-500 hover:border-yellow-600 hover:bg-dark-600 transition-all group"
               >
                 <div className="text-3xl mb-2">{cat.icon}</div>
-                <div className="text-sm font-medium text-gray-700">{cat.label}</div>
+                <div className="text-sm font-medium text-gray-400 group-hover:text-yellow-500 transition-colors">{cat.label}</div>
               </Link>
             ))}
           </div>
         </div>
       </div>
 
+      {/* Gold divider */}
+      <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)' }} />
+
       {/* Vendor & Rider CTA */}
-      <div className="max-w-5xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-8">
-        <div className="card p-8 bg-orange-50 border-orange-200">
+      <div className="max-w-5xl mx-auto px-4 py-20 grid md:grid-cols-2 gap-8">
+        <div className="rounded-2xl p-8 border" style={{ background: 'linear-gradient(135deg, #1a1200, #111111)', borderColor: '#3a2d00' }}>
           <div className="text-4xl mb-4">🏪</div>
-          <h3 className="text-xl font-bold mb-2">Are you a vendor?</h3>
-          <p className="text-gray-600 mb-4">List your products and start receiving orders from customers in your area.</p>
+          <h3 className="text-xl font-bold text-white mb-2">Are you a vendor?</h3>
+          <p className="text-gray-500 mb-6 text-sm leading-relaxed">List your products and start receiving orders from customers in your area.</p>
           <Link to="/register?role=vendor" className="btn-primary inline-block">Register as Vendor</Link>
         </div>
-        <div className="card p-8 bg-green-50 border-green-200">
+        <div className="rounded-2xl p-8 border border-dark-500 bg-dark-700">
           <div className="text-4xl mb-4">🚲</div>
-          <h3 className="text-xl font-bold mb-2">Want to earn money?</h3>
-          <p className="text-gray-600 mb-4">Sign up as a rider, accept deliveries nearby, and earn GHS per delivery.</p>
-          <Link to="/register?role=rider" className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg inline-block transition-colors">
-            Become a Rider
-          </Link>
+          <h3 className="text-xl font-bold text-white mb-2">Want to earn money?</h3>
+          <p className="text-gray-500 mb-6 text-sm leading-relaxed">Sign up as a rider, accept deliveries nearby, and earn GHS per delivery.</p>
+          <Link to="/register?role=rider" className="btn-secondary inline-block">Become a Rider</Link>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-gray-400 text-center py-8 text-sm">
-        <p>© 2026 BOAT Mampong. Built for the people of Mampong, Ghana.</p>
+      <footer className="border-t border-dark-600 text-center py-8 text-sm text-gray-600">
+        <p style={{ color: '#D4AF37' }} className="font-semibold mb-1">BOAT Mampong</p>
+        <p>© 2026 Built for the people of Mampong, Ghana.</p>
       </footer>
     </div>
   )

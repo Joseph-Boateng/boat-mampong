@@ -27,23 +27,23 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at center top, #1a1200 0%, #0C0C0C 70%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-bold text-brand-600">🚲 BOAT Mampong</Link>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+          <Link to="/" className="text-4xl font-bold" style={{ color: '#D4AF37' }}>🚲 BOAT Mampong</Link>
+          <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
 
-        <div className="card p-8">
+        <div className="bg-dark-700 rounded-2xl p-8 border border-dark-500" style={{ boxShadow: '0 0 40px rgba(212,175,55,0.05)' }}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+            <div className="bg-red-900 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-4 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
               <input
                 type="email"
                 className="input"
@@ -54,7 +54,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
               <input
                 type="password"
                 className="input"
@@ -64,15 +64,15 @@ export default function Login() {
                 required
               />
             </div>
-            <button type="submit" className="btn-primary w-full py-3" disabled={loading}>
+            <button type="submit" className="btn-primary w-full py-3 text-base" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
+        <p className="text-center text-sm text-gray-600 mt-5">
           Don't have an account?{' '}
-          <Link to="/register" className="text-brand-600 font-medium hover:underline">Register here</Link>
+          <Link to="/register" style={{ color: '#D4AF37' }} className="font-medium hover:underline">Register here</Link>
         </p>
       </div>
     </div>
