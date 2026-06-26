@@ -30,6 +30,16 @@ export default function AdminRiders() {
     }
   }
 
+  async function deleteRider(rider) {
+    if (!window.confirm(`Delete rider "${rider.name}"? This will permanently remove their account and profile.`)) return
+    try {
+      await api.delete(`/admin/users/${rider.id}`)
+      setRiders(prev => prev.filter(r => r.id !== rider.id))
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to delete rider.')
+    }
+  }
+
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Riders ({riders.length})</h2>
@@ -48,7 +58,7 @@ export default function AdminRiders() {
                 <th className="text-left p-4 font-semibold text-gray-600">Deliveries</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Earned (GHS)</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Verified</th>
-                <th className="p-4"></th>
+                <th className="p-4" colSpan={3}></th>
               </tr>
             </thead>
             <tbody>
@@ -76,10 +86,26 @@ export default function AdminRiders() {
                       {r.is_verified ? 'Unverify' : 'Verify'}
                     </button>
                   </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => toggleActive(r)}
+                      className={`text-xs px-3 py-1 rounded font-medium ${r.is_active !== false ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
+                    >
+                      {r.is_active !== false ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => deleteRider(r)}
+                      className="text-xs px-3 py-1 rounded font-medium bg-red-50 text-red-700 hover:bg-red-100"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
               {riders.length === 0 && (
-                <tr><td colSpan={8} className="p-8 text-center text-gray-400">No riders yet.</td></tr>
+                <tr><td colSpan={10} className="p-8 text-center text-gray-400">No riders yet.</td></tr>
               )}
             </tbody>
           </table>

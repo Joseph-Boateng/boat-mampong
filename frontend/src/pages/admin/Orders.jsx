@@ -2,44 +2,65 @@ import { useEffect, useState } from 'react'
 import api from '../../api/client'
 
 const STATUS_COLORS = {
-  pending: 'bg-amber-100 text-amber-800',
+  pending:   'bg-amber-100 text-amber-800',
   confirmed: 'bg-blue-100 text-blue-700',
-  ready: 'bg-purple-100 text-purple-700',
+  ready:     'bg-purple-100 text-purple-700',
   picked_up: 'bg-orange-100 text-orange-700',
   delivered: 'bg-green-100 text-green-700',
   cancelled: 'bg-red-100 text-red-700',
 }
+
+const STATUSES = ['pending', 'confirmed', 'ready', 'picked_up', 'delivered', 'cancelled']
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
 
-  useEffect(() => {
+  function load() {
+    setLoading(true)
     const params = statusFilter ? `?status=${statusFilter}` : ''
     api.get(`/admin/orders${params}`)
       .then(r => setOrders(r.data))
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [statusFilter])
+  }
+
+  useEffect(() => { load() }, [statusFilter])
+
+  async function changeStatus(order, status) {
+    try {
+      await api.patch(`/admin/orders/${order.id}/status`, { status })
+      setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status } : o))
+    } catch {
+      alert('Failed to update status.')
+    }
+  }
+
+  async function deleteOrder(order) {
+    if (!window.confirm(`Delete order ${order.id.slice(0, 8)}…? This cannot be undone.`)) return
+    try {
+      await api.delete(`/admin/orders/${order.id}`)
+      setOrders(prev => prev.filter(o => o.id !== order.id))
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to delete order.')
+    }
+  }
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Orders</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Orders ({orders.length})</h2>
 
       <div className="mb-5">
         <select
           value={statusFilter}
-          onChange={e => { setStatusFilter(e.target.value); setLoading(true) }}
+          onChange={e => setStatusFilter(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
         >
           <option value="">All statuses</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="ready">Ready</option>
-          <option value="picked_up">Picked Up</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
+          {STATUSES.map(s => (
+            <option key={s} value={s}>{s.replace('_', ' ')}</option>
+          ))}
         </select>
       </div>
 
@@ -57,6 +78,7 @@ export default function AdminOrders() {
                 <th className="text-left p-4 font-semibold text-gray-600">Total (GHS)</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Status</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Date</th>
+                <th className="p-4" colSpan={2}></th>
               </tr>
             </thead>
             <tbody>
@@ -76,10 +98,29 @@ export default function AdminOrders() {
                     </span>
                   </td>
                   <td className="p-4 text-gray-500">{new Date(o.created_at).toLocaleString()}</td>
+                  <td className="p-4">
+                    <select
+                      value={o.status}
+                      onChange={e => changeStatus(o, e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-700"
+                    >
+                      {STATUSES.map(s => (
+                        <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => deleteOrder(o)}
+                      className="text-xs px-3 py-1 rounded font-medium bg-red-50 text-red-700 hover:bg-red-100"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
               {orders.length === 0 && (
-                <tr><td colSpan={7} className="p-8 text-center text-gray-400">No orders found.</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-gray-400">No orders found.</td></tr>
               )}
             </tbody>
           </table>

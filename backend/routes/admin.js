@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const pool = require('../config/db');
 const { authMiddleware, requireRole } = require('../middleware/auth');
 
@@ -163,6 +164,102 @@ router.patch('/riders/:id/verify', async (req, res) => {
       `UPDATE rider_profiles SET is_verified = $1, updated_at = NOW() WHERE user_id = $2`,
       [is_verified, req.params.id]
     );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// POST /api/admin/users — create a user with any role
+router.post('/users', async (req, res) => {
+  const { name, email, phone, password, role } = req.body;
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ error: 'Name, email, password, and role are required.' });
+  }
+  const validRoles = ['customer', 'vendor', 'rider', 'admin'];
+  if (!validRoles.includes(role)) return res.status(400).json({ error: 'Invalid role.' });
+  try {
+    const password_hash = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      `INSERT INTO users (id, name, email, phone, password_hash, role)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       RETURNING id, name, email, phone, role, is_active, created_at`,
+      [uuidv4(), name, email, phone || null, password_hash, role]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') return res.status(400).json({ error: 'Email already in use.' });
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// DELETE /api/admin/users/:id — delete user and all associated data
+router.delete('/users/:id', async (req, res) => {
+  if (req.params.id === req.user.id) {
+    return res.status(400).json({ error: 'Cannot delete your own account.' });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const id = req.params.id;
+    await client.query(`UPDATE orders SET rider_id = NULL WHERE rider_id = $1`, [id]);
+    await client.query(`DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE customer_id = $1)`, [id]);
+    await client.query(`DELETE FROM orders WHERE customer_id = $1`, [id]);
+    await client.query(`DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE shop_id IN (SELECT id FROM shops WHERE owner_id = $1))`, [id]);
+    await client.query(`DELETE FROM orders WHERE shop_id IN (SELECT id FROM shops WHERE owner_id = $1)`, [id]);
+    await client.query(`DELETE FROM products WHERE shop_id IN (SELECT id FROM shops WHERE owner_id = $1)`, [id]);
+    await client.query(`DELETE FROM shops WHERE owner_id = $1`, [id]);
+    await client.query(`DELETE FROM rider_profiles WHERE user_id = $1`, [id]);
+    await client.query(`DELETE FROM users WHERE id = $1`, [id]);
+    await client.query('COMMIT');
+    res.json({ success: true });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ error: 'Server error.' });
+  } finally {
+    client.release();
+  }
+});
+
+// DELETE /api/admin/shops/:id — delete shop and all its data
+router.delete('/shops/:id', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { id } = req.params;
+    await client.query(`DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE shop_id = $1)`, [id]);
+    await client.query(`DELETE FROM orders WHERE shop_id = $1`, [id]);
+    await client.query(`DELETE FROM products WHERE shop_id = $1`, [id]);
+    await client.query(`DELETE FROM shops WHERE id = $1`, [id]);
+    await client.query('COMMIT');
+    res.json({ success: true });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: 'Server error.' });
+  } finally {
+    client.release();
+  }
+});
+
+// DELETE /api/admin/orders/:id — delete an order
+router.delete('/orders/:id', async (req, res) => {
+  try {
+    await pool.query(`DELETE FROM order_items WHERE order_id = $1`, [req.params.id]);
+    await pool.query(`DELETE FROM orders WHERE id = $1`, [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// PATCH /api/admin/orders/:id/status — manually update order status
+router.patch('/orders/:id/status', async (req, res) => {
+  const { status } = req.body;
+  const valid = ['pending', 'confirmed', 'ready', 'picked_up', 'delivered', 'cancelled'];
+  if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status.' });
+  try {
+    await pool.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [status, req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });

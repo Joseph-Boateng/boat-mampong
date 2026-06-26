@@ -8,13 +8,20 @@ const ROLE_COLORS = {
   admin: 'bg-red-100 text-red-700',
 }
 
+const EMPTY_FORM = { name: '', email: '', phone: '', password: '', role: 'customer' }
+
 export default function AdminUsers() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [formError, setFormError] = useState('')
+  const [creating, setCreating] = useState(false)
 
   function load() {
+    setLoading(true)
     const params = new URLSearchParams()
     if (roleFilter) params.set('role', roleFilter)
     if (search) params.set('search', search)
@@ -40,11 +47,44 @@ export default function AdminUsers() {
     }
   }
 
+  async function deleteUser(user) {
+    if (!window.confirm(`Delete "${user.name}"? This will permanently remove their account and all associated data.`)) return
+    try {
+      await api.delete(`/admin/users/${user.id}`)
+      setUsers(prev => prev.filter(u => u.id !== user.id))
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to delete user.')
+    }
+  }
+
+  async function createUser(e) {
+    e.preventDefault()
+    setFormError('')
+    setCreating(true)
+    try {
+      const res = await api.post('/admin/users', form)
+      setUsers(prev => [res.data, ...prev])
+      setShowModal(false)
+      setForm(EMPTY_FORM)
+    } catch (err) {
+      setFormError(err.response?.data?.error || 'Failed to create user.')
+    } finally {
+      setCreating(false)
+    }
+  }
+
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Users</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Users ({users.length})</h2>
+        <button
+          onClick={() => { setShowModal(true); setFormError(''); setForm(EMPTY_FORM) }}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+        >
+          + Add User
+        </button>
+      </div>
 
-      {/* Filters */}
       <div className="flex gap-3 mb-6 flex-wrap">
         <form onSubmit={handleSearch} className="flex gap-2">
           <input
@@ -54,7 +94,7 @@ export default function AdminUsers() {
             onChange={e => setSearch(e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-56"
           />
-          <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium">Search</button>
+          <button type="submit" className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Search</button>
         </form>
         <select
           value={roleFilter}
@@ -82,7 +122,7 @@ export default function AdminUsers() {
                 <th className="text-left p-4 font-semibold text-gray-600">Role</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Joined</th>
                 <th className="text-left p-4 font-semibold text-gray-600">Status</th>
-                <th className="p-4"></th>
+                <th className="p-4" colSpan={2}></th>
               </tr>
             </thead>
             <tbody>
@@ -110,13 +150,87 @@ export default function AdminUsers() {
                       {u.is_active !== false ? 'Deactivate' : 'Activate'}
                     </button>
                   </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => deleteUser(u)}
+                      className="text-xs px-3 py-1 rounded font-medium bg-red-50 text-red-700 hover:bg-red-100"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
               {users.length === 0 && (
-                <tr><td colSpan={7} className="p-8 text-center text-gray-400">No users found.</td></tr>
+                <tr><td colSpan={8} className="p-8 text-center text-gray-400">No users found.</td></tr>
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Add New User</h3>
+            <form onSubmit={createUser} className="space-y-3">
+              <input
+                placeholder="Full Name"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                required
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                type="email"
+                placeholder="Email address"
+                value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })}
+                required
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                placeholder="Phone (optional)"
+                value={form.phone}
+                onChange={e => setForm({ ...form, phone: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+                required
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <select
+                value={form.role}
+                onChange={e => setForm({ ...form, role: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="customer">Customer</option>
+                <option value="vendor">Vendor</option>
+                <option value="rider">Rider</option>
+                <option value="admin">Admin</option>
+              </select>
+              {formError && <p className="text-red-500 text-sm">{formError}</p>}
+              <div className="flex gap-2 justify-end pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {creating ? 'Creating…' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
