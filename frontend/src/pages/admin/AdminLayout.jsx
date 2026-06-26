@@ -24,7 +24,7 @@ export default function AdminLayout() {
       <aside className="w-56 flex flex-col border-r" style={{ background: '#111111', borderColor: '#2C2C2C' }}>
         <div className="p-5 border-b" style={{ borderColor: '#2C2C2C' }}>
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#D4AF37' }}>Admin Panel</p>
-          <h1 className="text-base font-bold text-white">BOAT Mampong</h1>
+          <h1 className="text-base font-bold text-white">BOAT</h1>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           {navItems.map(({ to, label, end }) => (

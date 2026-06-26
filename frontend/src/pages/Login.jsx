@@ -30,7 +30,7 @@ export default function Login() {
     <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at center top, #1a1200 0%, #0C0C0C 70%)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-4xl font-bold" style={{ color: '#D4AF37' }}>🚲 BOAT Mampong</Link>
+          <Link to="/" className="text-4xl font-bold" style={{ color: '#D4AF37' }}>🚲 BOAT</Link>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
 
