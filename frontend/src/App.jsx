@@ -16,6 +16,12 @@ import VendorProducts from './pages/vendor/Products'
 import VendorOrders from './pages/vendor/Orders'
 import RiderDashboard from './pages/rider/Dashboard'
 import RiderEarnings from './pages/rider/Earnings'
+import AdminLayout from './pages/admin/AdminLayout'
+import AdminOverview from './pages/admin/Overview'
+import AdminUsers from './pages/admin/Users'
+import AdminShops from './pages/admin/Shops'
+import AdminOrders from './pages/admin/Orders'
+import AdminRiders from './pages/admin/Riders'
 
 // Route guard
 function ProtectedRoute({ children, role }) {
@@ -71,6 +77,17 @@ export default function App() {
             <Route path="/rider/earnings" element={
               <ProtectedRoute role="rider"><RiderEarnings /></ProtectedRoute>
             } />
+
+            {/* Admin */}
+            <Route path="/admin" element={
+              <ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>
+            }>
+              <Route index element={<AdminOverview />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="shops" element={<AdminShops />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="riders" element={<AdminRiders />} />
+            </Route>
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
