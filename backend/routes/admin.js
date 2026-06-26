@@ -59,16 +59,34 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/users/:id — activate or deactivate a user
+// PATCH /api/admin/users/:id — update user fields (is_active, name, email, phone, role)
 router.patch('/users/:id', async (req, res) => {
-  const { is_active } = req.body;
+  const { is_active, name, email, phone, role } = req.body;
+  const validRoles = ['customer', 'vendor', 'rider', 'admin'];
+  if (role && !validRoles.includes(role)) return res.status(400).json({ error: 'Invalid role.' });
   try {
     const result = await pool.query(
-      `UPDATE users SET is_active = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, email, role, is_active`,
-      [is_active, req.params.id]
+      `UPDATE users SET
+        is_active = COALESCE($1, is_active),
+        name      = COALESCE($2, name),
+        email     = COALESCE($3, email),
+        phone     = COALESCE($4, phone),
+        role      = COALESCE($5, role),
+        updated_at = NOW()
+       WHERE id = $6
+       RETURNING id, name, email, phone, role, is_active`,
+      [
+        is_active !== undefined ? is_active : null,
+        name || null,
+        email || null,
+        phone || null,
+        role || null,
+        req.params.id,
+      ]
     );
     res.json(result.rows[0]);
   } catch (err) {
+    if (err.code === '23505') return res.status(400).json({ error: 'Email already in use.' });
     res.status(500).json({ error: 'Server error.' });
   }
 });
@@ -93,17 +111,31 @@ router.get('/shops', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/shops/:id — activate or deactivate a shop
+// PATCH /api/admin/shops/:id — update shop fields
 router.patch('/shops/:id', async (req, res) => {
-  const { is_active, is_open } = req.body;
+  const { is_active, is_open, name, description, category, address, phone } = req.body;
   try {
     const result = await pool.query(
       `UPDATE shops SET
-        is_active = COALESCE($1, is_active),
-        is_open = COALESCE($2, is_open),
-        updated_at = NOW()
-       WHERE id = $3 RETURNING *`,
-      [is_active, is_open, req.params.id]
+        is_active   = COALESCE($1, is_active),
+        is_open     = COALESCE($2, is_open),
+        name        = COALESCE($3, name),
+        description = COALESCE($4, description),
+        category    = COALESCE($5, category),
+        address     = COALESCE($6, address),
+        phone       = COALESCE($7, phone),
+        updated_at  = NOW()
+       WHERE id = $8 RETURNING *`,
+      [
+        is_active !== undefined ? is_active : null,
+        is_open   !== undefined ? is_open   : null,
+        name        || null,
+        description || null,
+        category    || null,
+        address     || null,
+        phone       || null,
+        req.params.id,
+      ]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -239,6 +271,47 @@ router.delete('/shops/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error.' });
   } finally {
     client.release();
+  }
+});
+
+// GET /api/admin/products — all products across all shops
+router.get('/products', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT p.id, p.name, p.description, p.price, p.category, p.is_available, p.created_at,
+              s.id AS shop_id, s.name AS shop_name
+       FROM products p
+       JOIN shops s ON s.id = p.shop_id
+       ORDER BY s.name, p.category, p.name`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// PATCH /api/admin/products/:id — toggle availability
+router.patch('/products/:id', async (req, res) => {
+  const { is_available } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE products SET is_available = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+      [is_available, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// DELETE /api/admin/products/:id — remove a product
+router.delete('/products/:id', async (req, res) => {
+  try {
+    await pool.query(`DELETE FROM order_items WHERE product_id = $1`, [req.params.id]);
+    await pool.query(`DELETE FROM products WHERE id = $1`, [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 
