@@ -15,8 +15,8 @@ export default function RiderDashboard() {
         api.get('/orders'),
       ])
       setAvailable(availRes.data)
-      // Find the rider's currently active delivery
-      const current = myRes.data.find((o) => o.status === 'picked_up')
+      // Find the rider's currently active delivery (accepted but not yet picked up, or picked up and en route)
+      const current = myRes.data.find((o) => o.status === 'assigned' || o.status === 'picked_up')
       setActive(current || null)
     } catch (err) {
       console.error(err)
@@ -43,6 +43,11 @@ export default function RiderDashboard() {
     }
   }
 
+  const handlePickedUp = async (orderId) => {
+    await api.patch(`/orders/${orderId}/status`, { status: 'picked_up' })
+    fetchData()
+  }
+
   const handleComplete = async (orderId) => {
     if (!window.confirm('Confirm delivery completed?')) return
     await api.patch(`/orders/${orderId}/status`, { status: 'delivered' })
@@ -59,8 +64,10 @@ export default function RiderDashboard() {
         {active && (
           <div className="card p-5 mb-6 border-2 border-brand-400 bg-orange-50">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🚲</span>
-              <h2 className="font-bold text-brand-700">Active Delivery</h2>
+              <span className="text-xl">{active.status === 'assigned' ? '🚴' : '🚲'}</span>
+              <h2 className="font-bold text-brand-700">
+                {active.status === 'assigned' ? 'Head to the Shop' : 'Active Delivery'}
+              </h2>
             </div>
             <div className="space-y-2 text-sm">
               <p><strong>Pickup:</strong> {active.shop_name} — {active.shop_address}</p>
@@ -73,12 +80,21 @@ export default function RiderDashboard() {
               )}
               <p><strong>Delivery fee:</strong> GHS {parseFloat(active.delivery_fee).toFixed(2)}</p>
             </div>
-            <button
-              onClick={() => handleComplete(active.id)}
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg w-full"
-            >
-              ✅ Mark as Delivered
-            </button>
+            {active.status === 'assigned' ? (
+              <button
+                onClick={() => handlePickedUp(active.id)}
+                className="mt-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2 px-6 rounded-lg w-full"
+              >
+                📦 I've Picked Up the Package
+              </button>
+            ) : (
+              <button
+                onClick={() => handleComplete(active.id)}
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg w-full"
+              >
+                ✅ Mark as Delivered
+              </button>
+            )}
           </div>
         )}
 

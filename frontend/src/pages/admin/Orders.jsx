@@ -5,12 +5,13 @@ const STATUS_COLORS = {
   pending:   'bg-amber-100 text-amber-800',
   confirmed: 'bg-blue-100 text-blue-700',
   ready:     'bg-purple-100 text-purple-700',
+  assigned:  'bg-indigo-100 text-indigo-700',
   picked_up: 'bg-orange-100 text-orange-700',
   delivered: 'bg-green-100 text-green-700',
   cancelled: 'bg-red-100 text-red-700',
 }
 
-const STATUSES = ['pending', 'confirmed', 'ready', 'picked_up', 'delivered', 'cancelled']
+const STATUSES = ['pending', 'confirmed', 'ready', 'assigned', 'picked_up', 'delivered', 'cancelled']
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([])

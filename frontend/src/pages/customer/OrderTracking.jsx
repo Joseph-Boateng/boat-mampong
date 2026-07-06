@@ -8,6 +8,7 @@ const STATUS_STEPS = [
   { key: 'pending',   label: 'Order Placed',      icon: '📋' },
   { key: 'confirmed', label: 'Vendor Confirmed',   icon: '✅' },
   { key: 'ready',     label: 'Ready for Pickup',   icon: '📦' },
+  { key: 'assigned',  label: 'Rider Assigned',     icon: '🚴' },
   { key: 'picked_up', label: 'Rider Picked Up',    icon: '🚲' },
   { key: 'delivered', label: 'Delivered!',          icon: '🎉' },
 ]
@@ -16,6 +17,7 @@ const STATUS_COLOR = {
   pending: 'bg-amber-100 text-amber-800',
   confirmed: 'bg-blue-100 text-blue-800',
   ready: 'bg-purple-100 text-purple-800',
+  assigned: 'bg-indigo-100 text-indigo-800',
   picked_up: 'bg-orange-100 text-orange-800',
   delivered: 'bg-green-100 text-green-800',
   cancelled: 'bg-red-100 text-red-800',

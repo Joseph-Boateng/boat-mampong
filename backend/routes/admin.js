@@ -329,7 +329,7 @@ router.delete('/orders/:id', async (req, res) => {
 // PATCH /api/admin/orders/:id/status — manually update order status
 router.patch('/orders/:id/status', async (req, res) => {
   const { status } = req.body;
-  const valid = ['pending', 'confirmed', 'ready', 'picked_up', 'delivered', 'cancelled'];
+  const valid = ['pending', 'confirmed', 'ready', 'assigned', 'picked_up', 'delivered', 'cancelled'];
   if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status.' });
   try {
     await pool.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [status, req.params.id]);

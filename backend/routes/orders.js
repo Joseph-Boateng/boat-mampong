@@ -165,7 +165,8 @@ router.get('/:id', authMiddleware, async (req, res) => {
 });
 
 // PATCH /api/orders/:id/status — update order status
-// Status flow: pending → confirmed (vendor) → ready (vendor) → picked_up (rider) → delivered (rider)
+// Status flow: pending → confirmed (vendor) → ready (vendor) → assigned (rider accepts)
+//              → picked_up (rider confirms pickup) → delivered (rider)
 router.patch('/:id/status', authMiddleware, async (req, res) => {
   const { status } = req.body;
   const validStatuses = ['confirmed', 'ready', 'picked_up', 'delivered', 'cancelled'];
@@ -227,7 +228,7 @@ router.patch('/:id/accept', authMiddleware, requireRole('rider'), async (req, re
     }
 
     const result = await pool.query(
-      `UPDATE orders SET rider_id = $1, status = 'picked_up', picked_up_at = NOW(), updated_at = NOW()
+      `UPDATE orders SET rider_id = $1, status = 'assigned', updated_at = NOW()
        WHERE id = $2 AND rider_id IS NULL AND status = 'ready'
        RETURNING *`,
       [req.user.id, req.params.id]

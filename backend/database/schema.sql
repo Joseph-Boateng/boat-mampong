@@ -63,7 +63,7 @@ CREATE TABLE orders (
   shop_id          UUID NOT NULL REFERENCES shops(id),
   rider_id         UUID REFERENCES users(id),
   status           VARCHAR(30) NOT NULL DEFAULT 'pending'
-                   CHECK (status IN ('pending', 'confirmed', 'ready', 'picked_up', 'delivered', 'cancelled')),
+                   CHECK (status IN ('pending', 'confirmed', 'ready', 'assigned', 'picked_up', 'delivered', 'cancelled')),
   delivery_address TEXT NOT NULL,
   delivery_notes   TEXT,
   subtotal         NUMERIC(10, 2) NOT NULL,
