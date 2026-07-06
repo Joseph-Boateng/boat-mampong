@@ -11,6 +11,7 @@ export default function Cart() {
   const navigate = useNavigate()
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('online')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -28,7 +29,16 @@ export default function Cart() {
         items,
         delivery_address: address,
         delivery_notes: notes,
+        payment_method: paymentMethod,
       })
+
+      if (paymentMethod === 'online') {
+        const payRes = await api.post('/payments/initialize', { order_id: res.data.id })
+        clearCart()
+        window.location.href = payRes.data.authorization_url
+        return
+      }
+
       clearCart()
       navigate(`/shop/orders/${res.data.id}`)
     } catch (err) {
@@ -114,6 +124,33 @@ export default function Cart() {
           </div>
         </div>
 
+        {/* Payment method */}
+        <div className="card p-5 mb-4">
+          <h2 className="font-semibold mb-3">Payment Method</h2>
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="online"
+                checked={paymentMethod === 'online'}
+                onChange={() => setPaymentMethod('online')}
+              />
+              <span className="text-sm">Pay now (Mobile Money / Card via Paystack)</span>
+            </label>
+            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="cash"
+                checked={paymentMethod === 'cash'}
+                onChange={() => setPaymentMethod('cash')}
+              />
+              <span className="text-sm">Cash on delivery</span>
+            </label>
+          </div>
+        </div>
+
         {/* Order summary */}
         <div className="card p-5 mb-5">
           <h2 className="font-semibold mb-3">Order Summary</h2>
@@ -144,11 +181,10 @@ export default function Cart() {
           disabled={loading}
           className="btn-primary w-full py-4 text-base"
         >
-          {loading ? 'Placing order...' : `Place Order · GHS ${(total + DELIVERY_FEE).toFixed(2)}`}
+          {loading
+            ? (paymentMethod === 'online' ? 'Redirecting to payment...' : 'Placing order...')
+            : `Place Order · GHS ${(total + DELIVERY_FEE).toFixed(2)}`}
         </button>
-        <p className="text-xs text-center text-gray-500 mt-2">
-          Payment collected on delivery or via Mobile Money
-        </p>
       </div>
     </div>
   )

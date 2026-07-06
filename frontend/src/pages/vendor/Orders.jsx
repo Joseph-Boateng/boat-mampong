@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
+import PaymentBadge from '../../components/PaymentBadge'
 import api from '../../api/client'
 
 const STATUS_ACTIONS = {
@@ -80,9 +81,12 @@ export default function VendorOrders() {
                       {new Date(order.created_at).toLocaleString('en-GH')}
                     </p>
                   </div>
-                  <span className={`badge ${STATUS_COLOR[order.status] || ''}`}>
-                    {order.status.replace('_', ' ')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <PaymentBadge order={order} />
+                    <span className={`badge ${STATUS_COLOR[order.status] || ''}`}>
+                      {order.status.replace('_', ' ')}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 mb-3">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
+import PaymentBadge from '../../components/PaymentBadge'
 import api from '../../api/client'
 
 const STATUS_STEPS = [
@@ -60,9 +61,12 @@ export default function OrderTracking() {
       <div className="max-w-xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold">Order Tracking</h1>
-          <span className={`badge ${STATUS_COLOR[order.status] || 'bg-gray-100 text-gray-600'}`}>
-            {order.status.replace('_', ' ')}
-          </span>
+          <div className="flex items-center gap-2">
+            <PaymentBadge order={order} />
+            <span className={`badge ${STATUS_COLOR[order.status] || 'bg-gray-100 text-gray-600'}`}>
+              {order.status.replace('_', ' ')}
+            </span>
+          </div>
         </div>
 
         {/* Progress tracker */}

@@ -10,6 +10,7 @@ import CustomerHome from './pages/customer/Home'
 import VendorDetail from './pages/customer/VendorDetail'
 import Cart from './pages/customer/Cart'
 import OrderTracking from './pages/customer/OrderTracking'
+import PaymentCallback from './pages/customer/PaymentCallback'
 import OrderHistory from './pages/customer/OrderHistory'
 import VendorDashboard from './pages/vendor/Dashboard'
 import VendorProducts from './pages/vendor/Products'
@@ -58,6 +59,9 @@ export default function App() {
             } />
             <Route path="/shop/orders/:id" element={
               <ProtectedRoute role="customer"><OrderTracking /></ProtectedRoute>
+            } />
+            <Route path="/shop/orders/:id/payment-callback" element={
+              <ProtectedRoute role="customer"><PaymentCallback /></ProtectedRoute>
             } />
 
             {/* Vendor */}

@@ -13,6 +13,11 @@ app.use(cors({
   ],
   credentials: true,
 }));
+// Paystack webhook needs the raw request body to verify its signature,
+// so it must be mounted before the global express.json() parser.
+const { router: paymentsRouter, paystackWebhook } = require('./routes/payments');
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paystackWebhook);
+
 app.use(express.json());
 
 // Routes
@@ -22,6 +27,7 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/riders', require('./routes/riders'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/payments', paymentsRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

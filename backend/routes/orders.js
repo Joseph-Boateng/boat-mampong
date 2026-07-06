@@ -6,11 +6,15 @@ const router = express.Router();
 
 // POST /api/orders — customer places an order
 router.post('/', authMiddleware, requireRole('customer'), async (req, res) => {
-  const { shop_id, items, delivery_address, delivery_notes } = req.body;
+  const { shop_id, items, delivery_address, delivery_notes, payment_method } = req.body;
   // items: [{ product_id, quantity }]
 
   if (!shop_id || !items || items.length === 0 || !delivery_address) {
     return res.status(400).json({ error: 'shop_id, items, and delivery_address are required.' });
+  }
+
+  if (payment_method && !['cash', 'online'].includes(payment_method)) {
+    return res.status(400).json({ error: 'payment_method must be "cash" or "online".' });
   }
 
   const client = await pool.connect();
@@ -49,10 +53,10 @@ router.post('/', authMiddleware, requireRole('customer'), async (req, res) => {
     // Create order
     const orderResult = await client.query(
       `INSERT INTO orders
-         (customer_id, shop_id, delivery_address, delivery_notes, subtotal, delivery_fee, total, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
+         (customer_id, shop_id, delivery_address, delivery_notes, subtotal, delivery_fee, total, status, payment_method)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', $8)
        RETURNING *`,
-      [req.user.id, shop_id, delivery_address, delivery_notes, subtotal, delivery_fee, total]
+      [req.user.id, shop_id, delivery_address, delivery_notes, subtotal, delivery_fee, total, payment_method || 'cash']
     );
     const order = orderResult.rows[0];
 
@@ -176,7 +180,7 @@ router.patch('/:id/status', authMiddleware, async (req, res) => {
     const o = order.rows[0];
 
     // Authorization checks
-    if (['confirmed', 'ready'].includes(status)) {
+    if (['confirmed', 'ready', 'cancelled'].includes(status)) {
       const shop = await pool.query('SELECT owner_id FROM shops WHERE id = $1', [o.shop_id]);
       if (shop.rows[0].owner_id !== req.user.id) {
         return res.status(403).json({ error: 'Only the vendor can update this status.' });

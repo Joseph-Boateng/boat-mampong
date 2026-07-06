@@ -71,6 +71,8 @@ CREATE TABLE orders (
   total            NUMERIC(10, 2) NOT NULL,
   payment_status   VARCHAR(20) DEFAULT 'pending'
                    CHECK (payment_status IN ('pending', 'paid', 'refunded')),
+  payment_method   VARCHAR(20) NOT NULL DEFAULT 'cash'
+                   CHECK (payment_method IN ('cash', 'online')),
   payment_ref      VARCHAR(100),
   picked_up_at     TIMESTAMPTZ,
   delivered_at     TIMESTAMPTZ,
