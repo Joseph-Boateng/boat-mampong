@@ -5,12 +5,18 @@ const cors = require('cors');
 const app = express();
 
 // Middleware
+// Matches boat-mampong.vercel.app plus every Vercel-generated alias for this
+// project (per-branch previews, per-deployment URLs), not just one hardcoded URL.
+const VERCEL_ORIGIN_PATTERN = /^https:\/\/boat-mampong(-[a-z0-9-]+)?\.vercel\.app$/;
+const staticAllowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:5173'].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:5173',
-    'https://boat-mampong.vercel.app',
-    'http://localhost:5173',
-  ],
+  origin: (origin, callback) => {
+    if (!origin || staticAllowedOrigins.includes(origin) || VERCEL_ORIGIN_PATTERN.test(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 // Paystack webhook needs the raw request body to verify its signature,
